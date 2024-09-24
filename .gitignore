@@ -1,4 +1,4 @@
-/data/*
+/data/aster30m/*
 !/data/.gitkeep
 .config
 /notebooks

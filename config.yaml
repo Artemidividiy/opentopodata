@@ -3,7 +3,7 @@
 
 
 # 400 error will be thrown above this limit.
-max_locations_per_request: 100 
+max_locations_per_request: 100000 
 
 
 # CORS header. Should be null for no CORS, '*' for all domains, or a url with
@@ -14,8 +14,8 @@ access_control_allow_origin: "*"
 datasets:
 
 # A small testing dataset is included in the repo.
-- name: test-dataset
-  path: tests/data/datasets/test-etopo1-resampled-1deg/
+- name: aster30m
+  path: data/aster30m/
 
 # Example config for 90 metre SRTM.
 # - name: srtm90m

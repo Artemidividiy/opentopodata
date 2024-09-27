@@ -15,7 +15,7 @@ datasets:
 
 # A small testing dataset is included in the repo.
 - name: aster30m
-  path: data/aster30m/
+  path: /data/aster30m/
 
 # Example config for 90 metre SRTM.
 # - name: srtm90m

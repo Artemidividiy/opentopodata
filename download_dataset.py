@@ -13,17 +13,29 @@ console = Console()
 links = requests.get('https://www.opentopodata.org/datasets/aster30m_urls.txt').text.split('\n')
 current, total = 0, len(links) 
 saved = 0
-dir_to_save_to = '/Users/Rober/dev/work/x_keeper/topography/opentopodata/data/aster30m'
+dir_to_save_to = os.getenv('DATA_DIRECTORY')
+if dir_to_save_to is None: 
+    dir_to_save_to = '/Users/Rober/dev/work/x_keeper/topography/opentopodata/data/aster30m'
 
 header = {'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6IngxdjQiLCJleHAiOjE3MzIzMDk3MzgsImlhdCI6MTcyNzEyNTczOCwiaXNzIjoiaHR0cHM6Ly91cnMuZWFydGhkYXRhLm5hc2EuZ292In0.NTpULG-oyjqms43jjMdoo_1b4bmXadsJ0IGBzKy0NWiI1GGcoQz5_G_hQxlfb_5UswAerv_Zp7rL7W1Jo2fd3yfbGLlKm3GirIxGhchhatF7kECQaxKhQIHYaQHBTWLMY8Hr6te5w1c9mJcp0RYX_n3J48U231Hmb_z0Z4jBGWoZeJa4ybpXq6XalAFwIXKsgZ9QbB6M-I_VYIVUIkysE2lzvxHdczvrsYh4QjGS-JL6nxe5rkmFo_jzoYY7XZfmUsJAUqWaJlqdjPoaJt_PpqwAwLnDJ0YPHovNs-f7QRhKdJpnpJgUAw0uUDIWNcBjMewvGb1C8ytShtcrVPZqPw'}
 
-def check_file_exits(link_to_file_to_download: str): 
+def check_file_exists(link_to_file_to_download: str): 
+    check_dir_exists(dir_to_save_to)
     file_name_to_download = link_to_file_to_download.split('/')[-1].split('.')[0]
     file_names = [file for file in os.listdir(dir_to_save_to) if os.path.isfile(os.path.join(dir_to_save_to, file))]
     for i in file_names: 
         if os.path.isfile(os.path.join(dir_to_save_to, i)) and i.split('.')[0][:-4:] == file_name_to_download:
             return True
     return False
+
+def define_russian_border(): 
+    return {}
+
+def check_dir_exists(dir_name): 
+    if not os.path.exists(dir_name): 
+        os.makedirs(os.path.join(dir_to_save_to))
+    return 
+
 async def download_and_extract_zip(url, destination_folder):
     async with aiohttp.ClientSession(headers=header) as session:
         # auth = aiohttp.BasicAuth(login='x1v4', password='Artemiy1234;')
@@ -38,15 +50,15 @@ async def download_and_extract_zip(url, destination_folder):
                 console.print(f"Failed to download the zip archive: {response.status}")
 start_time = datetime.now()
 for i in track(links, 'downloading dataset'):
-    if check_file_exits(i): continue
-    # console.clear()
+    if check_file_exists(i): continue
+    
     console.print(start_time)
     current += 1
     console.print(f"\nNow [cyan]{current}[/cyan] out of [cyan]{total}[/cyan]")
     loop = asyncio.get_event_loop()
     loop.run_until_complete(download_and_extract_zip(i, dir_to_save_to))
     # loop.run_until_complete(download_and_extract_zip(i, '/root/opentopodata/data/aster30m'))
-    # console.clear()
+    
 end_time = datetime.now()
 console.print(f'[yellow] took {end_time - start_time}')
 console.print(f'[green]done![/green]\nMissing {total - saved} archives')
